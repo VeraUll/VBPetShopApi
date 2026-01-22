@@ -24,19 +24,19 @@ PET_SCHEMA = {
             "type": "array",
             "items": {
                  "type": "string"
-               }
-            },
+            }
+        },
         "tags": {
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
-                     "id": {
+                    "id": {
                         "type": "integer"
-                        },
-                        "name": {
-                            "type": "string"
-                        }
+                    },
+                    "name": {
+                        "type": "string"
+                    }
                 },
                 "required": ["id", "name"],
                 "additionalProperties": False
