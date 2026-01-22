@@ -94,7 +94,7 @@ class TestPet:
             response = requests.post(url=f"{BASE_URL}/pet", json=payload)
             response_json = response.json()
 
-        with allure.step("Проверка статуса ответа"):
+        with allure.step("Проверка статуса ответа и валидация JSON-схемы"):
             assert response.status_code == 200
             jsonschema.validate(response_json, PET_SCHEMA)
 
