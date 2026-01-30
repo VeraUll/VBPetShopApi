@@ -1,0 +1,52 @@
+import pytest
+import requests
+
+BASE_URL = "http://5.181.109.28:9090/api/v3"
+
+@pytest.fixture(scope="function")
+def create_pet():
+    """Фикстура для создания питомца"""
+    payload = {
+        "id": 1,
+        "name": "Buddy",
+        "status": "available"
+    }
+    response = requests.post(url=f"{BASE_URL}/pet", json=payload)
+    assert response.status_code == 200
+    return response.json()
+
+@pytest.fixture(scope="function")
+def create_one_more_pet():
+    """Фикстура для создания еще одного питомца"""
+    payload = {
+        "id": 12,
+        "name": "Corny",
+        "status": "available"
+    }
+    response = requests.post(url=f"{BASE_URL}/pet", json=payload)
+    assert response.status_code == 200
+    return response.json()
+
+@pytest.fixture(scope="function")
+def update_pet():
+    """Фикстура для обновления данных о питомце"""
+    payload = {
+        "id": 123,
+        "name": "New Buddy Boy",
+        "status": "sold"
+    }
+    response = requests.put(url=f"{BASE_URL}/pet", json=payload)
+    assert response.status_code == 200
+    return response.json()
+
+@pytest.fixture(scope="function")
+def delete_pet():
+    """Фикстура для удаления данных о питомце"""
+    payload = {
+        "id": 12,
+        "name": "Corny",
+        "status": "available"
+    }
+    response = requests.delete(url=f"{BASE_URL}/pet", json=payload)
+    assert response.status_code == 200
+    return response.json()
