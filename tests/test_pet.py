@@ -4,7 +4,7 @@ import allure
 import jsonschema
 import requests
 
-from .conftest import update_pet
+from .conftest import create_pet
 from .schemas.pet_schema import PET_SCHEMA
 
 
@@ -122,36 +122,35 @@ class TestPet:
             assert response.status_code == 200
             assert response.json()["id"] == pet_id
 
-    @allure.title("Получение информации о питомце по ID")
-    def test_get_other_pet_by_id(self, create_one_more_pet):
-        with allure.step("Получение ID созданного питомца"):
-            pet_id = create_one_more_pet["id"]
-
-        with allure.step("Отправка запроса на получение информации о питомце по ID"):
-            response = requests.get(f"{BASE_URL}/pet/{pet_id}")
-
-        with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 200
-            assert response.json()["id"] == pet_id
-
-
-
     @allure.title("Обновление информации о питомце")
-    def test_update_pet(self, update_pet):
+    def test_update_pet(self, create_pet):
         with allure.step("Получение ID обновленного питомца"):
-            pet_id = update_pet["id"]
+            pet_id = create_pet["id"]
 
-        with allure.step("Отправка запроса на получение информации о питомце по ID"):
-            response = requests.get(f"{BASE_URL}/pet/{pet_id}")
+        updated_pet_data = {
+            "id": pet_id,
+            "name": "Barsik Updated",
+            "status": "sold"
+        }
 
-        with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 200
-            assert response.json()["id"] == pet_id
+        with allure.step("Отправка запроса на обновление информации о питомце"):
+            response = requests.put(
+                f"{BASE_URL}/pet",
+                json=updated_pet_data
+            )
 
+        with allure.step("Проверка обновлённых данных в ответе"):
+            response_json = response.json()
+            assert response_json["id"] == pet_id
+            assert response_json["name"] == "Barsik Updated"
+            assert response_json["status"] == "sold"
 
-        with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 200
-            assert response.json()["id"] == pet_id
+        with allure.step("Проверка, что данные действительно обновились через GET"):
+            get_response = requests.get(f"{BASE_URL}/pet/{pet_id}")
+            assert get_response.status_code == 200
+            assert get_response.json()["name"] == "Barsik Updated"
+            assert get_response.json()["status"] == "sold"
+
 
     @allure.title("Удаление информации о питомце")
     def test_delete_pet(self, create_pet):
