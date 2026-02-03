@@ -2,6 +2,7 @@ from venv import create
 
 import allure
 import jsonschema
+import pytest
 import requests
 
 from .conftest import create_pet
@@ -162,5 +163,37 @@ class TestPet:
 
         with allure.step("Проверка статуса ответа"):
             assert response.status_code == 404
+
+    @allure.title("Получение списка питомцев по статусу")
+    @pytest.mark.parametrize(
+        "status, expected_status_code",
+        [
+            ("available", 200),
+            ("sold", 200),
+            ("pending", 200),
+            ("asdasd", 400),
+            ("null", 400),
+        ]
+
+    )
+    def test_get_pets_by_status(self, status, expected_status_code):
+        with allure.step(f"Отправка запроса на получение списка питомцев по статусу {status}"):
+            response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status" : status})
+
+        with allure.step("Проверка статуса ответа и формата данных"):
+            assert response.status_code == expected_status_code
+            # assert isinstance(response.json(), list)
+
+        with allure.step("Отправка запроса с несуществующим статусом на получение питомцев"):
+            response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status" : "asdasd"})
+
+        with allure.step("проверка статуса ответа"):
+            assert response.status_code == 400
+
+        with allure.step("Отправка запроса с пустым статусом на получение питомцев"):
+            response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status" : "null"})
+
+        with allure.step("Проверка статуса ответа"):
+            assert response.status_code == 400
 
 
